@@ -1,4 +1,5 @@
 from http import HTTPStatus
+import logging
 
 from dicttoxml import dicttoxml
 from fastapi import (
@@ -24,6 +25,13 @@ from code_war.schemas import (
     Message,
 )
 
+# Configuração do logger
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
@@ -33,6 +41,7 @@ Base.metadata.create_all(bind=engine)
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ):
+    logger.warning(f"Erro de validação: {exc.errors()}")
     return JSONResponse(
         status_code=HTTPStatus.BAD_REQUEST,
         content={'status': 'Erro de validação', 'errors': exc.errors()},
@@ -52,17 +61,17 @@ def format_response(data: dict, request: Request, status_code: int = 200):
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
+    logger.info("Endpoint raiz '/' acessado.")
     return {'message': 'API de filmes do Studio Ghibli'}
 
 
-@app.post(
-    '/filmes/', status_code=HTTPStatus.CREATED, response_model=FilmePublic
-)
+@app.post('/filmes/', status_code=HTTPStatus.CREATED, response_model=FilmePublic)
 def create_filme(filme: FilmeCreate, session: Session = Depends(get_session)):
     db_filme = Filme(**filme.dict())
     session.add(db_filme)
     session.commit()
     session.refresh(db_filme)
+    logger.info(f"Filme criado: {db_filme.titulo}")
     return FilmePublic.model_validate(db_filme)
 
 
@@ -74,10 +83,11 @@ def read_filmes(
     session: Session = Depends(get_session),
 ):
     filmes = session.scalars(select(Filme).offset(skip).limit(limit)).all()
-    # Converta cada filme para o schema Pydantic
     filmes_public = [
         FilmePublic.model_validate(f).model_dump() for f in filmes
     ]
+    logger.info(
+        f"{len(filmes)} filmes recuperados (limit={limit}, skip={skip})")
     return format_response({'filmes': filmes_public}, request)
 
 
@@ -87,7 +97,9 @@ def read_filme(
 ):
     db_filme = session.get(Filme, filme_id)
     if not db_filme:
+        logger.warning(f"Filme não encontrado: ID {filme_id}")
         raise HTTPException(status_code=404, detail='Filme não encontrado')
+    logger.info(f"Filme recuperado: ID {filme_id}")
     return format_response(
         jsonable_encoder(FilmePublic.model_validate(db_filme)), request
     )
@@ -99,6 +111,8 @@ def update_filme(
 ):
     db_filme = session.get(Filme, filme_id)
     if not db_filme:
+        logger.warning(
+            f"Tentativa de atualizar filme inexistente: ID {filme_id}")
         raise HTTPException(status_code=404, detail='Filme não encontrado')
 
     update_data = filme.dict(exclude_unset=True)
@@ -107,6 +121,7 @@ def update_filme(
 
     session.commit()
     session.refresh(db_filme)
+    logger.info(f"Filme atualizado: ID {filme_id}")
     return FilmePublic.model_validate(db_filme)
 
 
@@ -114,6 +129,8 @@ def update_filme(
 def delete_filme(filme_id: int, session: Session = Depends(get_session)):
     db_filme = session.get(Filme, filme_id)
     if not db_filme:
+        logger.warning(
+            f"Tentativa de deletar filme inexistente: ID {filme_id}")
         raise HTTPException(status_code=404, detail='Filme não encontrado')
 
     db_filme.data_exclusao = (
@@ -123,4 +140,5 @@ def delete_filme(filme_id: int, session: Session = Depends(get_session)):
     )
     session.delete(db_filme)
     session.commit()
+    logger.info(f"Filme deletado: ID {filme_id}")
     return {'message': 'Filme excluído com sucesso'}
