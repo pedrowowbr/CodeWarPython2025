@@ -1,61 +1,76 @@
-# ⚔️ Code War 2025 – API com Python + Análise de Dados
+# ⚔️ Code War 2025 – API de Filmes Ghibli com FastAPI
 
 ## 📌 Descrição
 
-Este projeto foi desenvolvido como parte do desafio **Code War 2025 – Edição Python + Análise de Dados**. O objetivo é construir uma **API RESTful do zero** utilizando **FastAPI**, integrando com banco de dados **SQLite**, realizando um **processo ETL** a partir de uma **API pública**, e exibindo os dados em um **dashboard interativo**.
+Este projeto foi desenvolvido como parte do desafio **Code War 2025 – Edição Python + Análise de Dados**. O objetivo é construir uma **API RESTful do zero** utilizando **FastAPI**, com integração a um banco de dados **SQLite**, validações robustas, **registro de logs**, testes automatizados e um processo **ETL** a partir da **API pública do Studio Ghibli**.
 
-A proposta é aplicar boas práticas de programação, organização de repositório, logs, testes e, opcionalmente, conteinerização com Docker.
+A proposta envolve boas práticas de desenvolvimento, versionamento com Git, logs detalhados, testes automatizados com Pytest e, opcionalmente, conteinerização com Docker.
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Python 3.10+**
-- **FastAPI**  
+- **FastAPI**
 - **SQLite + SQLAlchemy**
 - **Pydantic**
 - **Uvicorn**
 - **Requests**
 - **Pandas**
-- **Streamlit / Plotly**
+- **Logging (nativo do Python)**
+- **Streamlit / Plotly** (dashboard)
 - **Pytest** (testes)
 - **Docker / Docker Compose** (bônus)
 
+---
+
 ## 🔄 Funcionalidades da API
 
-- `GET /entidade` – Lista todos os registros (JSON e XML)
-- `GET /entidade/{id}` – Busca item por ID
-- `POST /entidade` – Cria novo item
-- `PUT /entidade/{id}` – Atualiza item existente
-- `DELETE /entidade/{id}` – Exclui item (soft delete)
-- Datas de inclusão, edição e exclusão registradas automaticamente
-- Logs das requisições
-- Validação de erros (status 200, 400, etc.)
+- `GET /filmes/` – Lista todos os filmes (resposta em JSON ou XML)
+- `GET /filmes/{id}` – Busca filme por ID
+- `POST /filmes/` – Cria novo filme
+- `PUT /filmes/{id}` – Atualiza um filme
+- `DELETE /filmes/{id}` – Deleta um filme (soft delete)
 
-## 📥 ETL com API Pública
+### Extras:
+- ✅ Datas de inclusão, edição e exclusão geradas automaticamente
+- ✅ Validação de entrada com tratamento de erro `400`
+- ✅ Logs registrados em tempo real para cada operação
 
-- API utilizada: https://ghibliapi.vercel.app/
-- Extração de dados externos
-- Transformação com Pandas
-- Inserção automatizada via API
+---
 
-## 📊 Dashboard
+## 🧪 Testes Automatizados
 
-- Análise exploratória dos dados
-- Visualização interativa com Plotly
-- Gráficos de distribuição, comparação e insights
+- Desenvolvidos com `pytest` e `TestClient` do FastAPI
+- Testes de:
+  - Criação (`POST`)
+  - Leitura (`GET`)
+  - Atualização (`PUT`)
+  - Exclusão (`DELETE`)
+  - Validações de erros e status HTTP
+- Rodam com banco de dados `:memory:` (isolado por teste)
+- Simulam inserção e retorno com schemas reais
 
-## 🧪 Testes
+---
 
-- Testes unitários com `pytest`
-- Validação de endpoints principais
-- Simulação de falhas (respostas esperadas)
+## 📝 Registro de Logs
 
-## 🐳 Docker (BÔNUS)
+- Implementação completa de `logging` no backend
+- Logs gerados para cada endpoint (`INFO`, `ERROR`)
+- Mensagens padronizadas com timestamp e rota acessada
+- Exemplo de log gerado:
 
-- Arquivo `Dockerfile` configurado
-- `docker-compose.yml` (se necessário)
-- Imagem disponível para uso e compartilhamento
-- Documentação do processo de build e execução
+▶️ Como rodar localmente
 
-## 👨‍💻 Autor
+# Instalar dependências
+pip install -r requirements.txt
+
+# Executar a API localmente
+uvicorn code_war.app:app --reload
+
+# Rodar testes
+pytest
+
+👨‍💻 Autor
 
 Desenvolvido por Pedro Eduardo Braga
