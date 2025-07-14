@@ -1,7 +1,6 @@
 import logging
 from http import HTTPStatus
 
-import requests
 from dicttoxml import dicttoxml
 from fastapi import (
     Depends,
@@ -17,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from code_war.database import engine, get_session
+from code_war.etl import extract_filmes, load_filmes, transform_filmes
 from code_war.models import Base, Filme
 from code_war.schemas import (
     FilmeCreate,
@@ -150,37 +150,17 @@ def delete_filme(filme_id: int, session: Session = Depends(get_session)):
     logger.info(f'Filme deletado: ID {filme_id}')
     return {'message': 'Filme excluído com sucesso'}
 
+
 @app.post('/etl/ghibli', response_model=Message)
 def etl_ghibli(session: Session = Depends(get_session)):
-    url = 'https://ghibliapi.vercel.app/films/'
     try:
-        response = requests.get(url)
-        response.raise_for_status()
-        filmes = response.json()
-
-        inseridos = 0
-        for filme in filmes:
-            novo_filme = Filme(
-                titulo=filme['title'],
-                titulo_original=filme['original_title'],
-                titulo_romanizado=filme['original_title_romanised'],
-                descricao=filme['description'],
-                diretor=filme['director'],
-                produtor=filme['producer'],
-                data_lancamento=filme['release_date'],
-                duracao_min=filme['running_time'],
-                pontuacao_rotten_tomatoes=filme['rt_score'],
-            )
-            session.add(novo_filme)
-            inseridos += 1
-
-        session.commit()
-        logger.info(f'ETL concluído: {inseridos} filmes inseridos.')
+        dados = extract_filmes()
+        filmes = transform_filmes(dados)
+        inseridos = load_filmes(filmes, session)
         return {'message': f'{inseridos} filmes inseridos com sucesso'}
-
-    except requests.RequestException as e:
-        logger.error(f'Erro na requisição à API do Ghibli: {e}')
+    except Exception as e:
+        logger.error(f'Erro no processo ETL: {e}')
         raise HTTPException(
             status_code=HTTPStatus.BAD_GATEWAY,
-            detail='Erro ao extrair dados da API pública.',
+            detail='Erro ao executar o processo ETL.',
         )
