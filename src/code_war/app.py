@@ -64,7 +64,7 @@ def format_response(data: dict, request: Request, status_code: int = 200):
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
     logger.info("Endpoint raiz '/' acessado.")
-    return {'message': 'API de filmes do Studio Ghibli'}
+    return {"message": "API de filmes TMDb"}
 
 
 @app.post(
@@ -151,8 +151,8 @@ def delete_filme(filme_id: int, session: Session = Depends(get_session)):
     return {'message': 'Filme excluído com sucesso'}
 
 
-@app.post('/etl/ghibli', response_model=Message)
-def etl_ghibli(session: Session = Depends(get_session)):
+@app.post('/etl/tmdb', response_model=Message)
+def etl_tmdb(session: Session = Depends(get_session)):
     try:
         dados = extract_filmes()
         filmes = transform_filmes(dados)

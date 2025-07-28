@@ -1,24 +1,25 @@
 from sqlalchemy import select
-
 from code_war.models import Filme
 
 
 def test_create_filme(session):
     filme = Filme(
-        titulo='Meu Vizinho Totoro',
-        titulo_original='となりのトトロ',
-        titulo_romanizado='Tonari no Totoro',
-        descricao='Espíritos mágicos da floresta.',
-        diretor='Hayao Miyazaki',
-        produtor='Hayao Miyazaki',
-        data_lancamento='1988',
-        duracao_min='86',
-        pontuacao_rotten_tomatoes='93',
+        tmdb_id=123,
+        titulo='Interstellar',
+        titulo_original='Interstellar',
+        idioma_original='en',
+        popularidade=543.2,
+        media_votos=8.6,
+        contagem_votos=120000,
+        data_lancamento='2014-11-07',
+        overview='Uma jornada para salvar a humanidade através do espaço.',
+        caminho_poster='/interstellar.jpg',
+        generos='["Adventure", "Drama", "Sci-Fi"]'  # ← Atualização aqui
     )
     session.add(filme)
     session.commit()
 
-    result = session.scalar(
-        select(Filme).where(Filme.titulo == 'Meu Vizinho Totoro')
-    )
-    assert result.diretor == 'Hayao Miyazaki'
+    result = session.scalar(select(Filme).where(
+        Filme.titulo == 'Interstellar'))
+    assert result.tmdb_id == 123
+    assert result.media_votos > 8

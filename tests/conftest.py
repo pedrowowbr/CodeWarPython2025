@@ -37,22 +37,19 @@ def client(session):
 @pytest.fixture
 def filme(session):
     filme = Filme(
-        titulo='A Viagem de Chihiro',
-        titulo_original='千と千尋の神隠し',
-        titulo_romanizado='Sen to Chihiro no Kamikakushi',
-        descricao=(
-            'Durante a mudança da família para os subúrbios, uma garota '
-            'aventureira entra em um mundo governado por deuses, bruxas e '
-            'espíritos.'
-        ),
-        diretor='Hayao Miyazaki',
-        produtor='Toshio Suzuki',
-        data_lancamento='2001',
-        duracao_min='125',
-        pontuacao_rotten_tomatoes='97',
+        tmdb_id=999,
+        titulo='Matrix',
+        titulo_original='The Matrix',
+        idioma_original='en',
+        popularidade=123.4,
+        media_votos=8.7,
+        contagem_votos=25000,
+        data_lancamento='1999-03-31',
+        overview='Um hacker descobre a verdade sobre sua realidade.',
+        caminho_poster='/matrix.jpg',
+        generos='["Action", "Sci-Fi"]'  # ← Atualização aqui
     )
     session.add(filme)
     session.commit()
     session.refresh(filme)
-    # Retorne como dict serializável pelo schema Pydantic
     return FilmePublic.from_orm(filme).dict(by_alias=True)

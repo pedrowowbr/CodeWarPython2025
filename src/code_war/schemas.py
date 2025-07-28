@@ -11,13 +11,16 @@ class Message(BaseModel):
 class FilmeBase(BaseModel):
     titulo: str
     titulo_original: str
-    titulo_romanizado: str
+    idioma_original: str
     descricao: str
-    diretor: str
-    produtor: str
     data_lancamento: str
-    duracao_min: str
-    pontuacao_rotten_tomatoes: str
+    popularidade: float
+    media_votos: float
+    quantidade_votos: int
+    poster: Optional[str] = None
+    backdrop: Optional[str] = None
+    adulto: bool
+    generos: str
 
 
 class FilmeCreate(FilmeBase):
@@ -25,20 +28,23 @@ class FilmeCreate(FilmeBase):
 
 
 class FilmeUpdate(BaseModel):
-    titulo: Optional[str] = None
-    titulo_original: Optional[str] = None
-    titulo_romanizado: Optional[str] = None
-    descricao: Optional[str] = None
-    diretor: Optional[str] = None
-    produtor: Optional[str] = None
-    data_lancamento: Optional[str] = None
-    duracao_min: Optional[str] = None
-    pontuacao_rotten_tomatoes: Optional[str] = None
+    titulo: str
+    titulo_original: str
+    idioma_original: str
+    descricao: str
+    data_lancamento: str
+    popularidade: float
+    media_votos: float
+    quantidade_votos: int
+    poster: Optional[str] = None
+    backdrop: Optional[str] = None
+    adulto: bool
+    generos: str
 
 
 class FilmePublic(FilmeBase):
     id: int
-    data_inclusao: Optional[datetime] = None
+    data_inclusao: datetime
     data_edicao: Optional[datetime] = None
     data_exclusao: Optional[datetime] = None
 
