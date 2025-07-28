@@ -1,76 +1,94 @@
-# ⚔️ Code War 2025 – API de Filmes Ghibli com FastAPI
+# 🎬 API de Filmes 
 
-## 📌 Descrição
-
-Este projeto foi desenvolvido como parte do desafio **Code War 2025 – Edição Python + Análise de Dados**. O objetivo é construir uma **API RESTful do zero** utilizando **FastAPI**, com integração a um banco de dados **SQLite**, validações robustas, **registro de logs**, testes automatizados e um processo **ETL** a partir da **API pública do Studio Ghibli**.
-
-A proposta envolve boas práticas de desenvolvimento, versionamento com Git, logs detalhados, testes automatizados com Pytest e, opcionalmente, conteinerização com Docker.
+Este projeto foi desenvolvido como parte do **desafio Code War 2025**, com o objetivo de aplicar conceitos avançados de backend, integração com APIs públicas (TMDb), manipulação de banco de dados, ETL e visualização de dados com Streamlit.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 📌 Objetivo
 
-- **Python 3.10+**
-- **FastAPI**
-- **SQLite + SQLAlchemy**
-- **Pydantic**
-- **Uvicorn**
-- **Requests**
-- **Pandas**
-- **Logging (nativo do Python)**
-- **Streamlit / Plotly** (dashboard)
-- **Pytest** (testes)
-- **Docker / Docker Compose** (bônus)
+Criar uma API RESTful com dados extraídos da API pública do The Movie Database (TMDb), armazenados em banco local e exibidos em um dashboard com métricas visuais e interativas.
 
 ---
 
-## 🔄 Funcionalidades da API
+## 🛠️ Funcionalidades 
 
-- `GET /filmes/` – Lista todos os filmes (resposta em JSON ou XML)
-- `GET /filmes/{id}` – Busca filme por ID
-- `POST /filmes/` – Cria novo filme
-- `PUT /filmes/{id}` – Atualiza um filme
-- `DELETE /filmes/{id}` – Deleta um filme (soft delete)
+✅ Endpoints da API (FastAPI)
 
-### Extras:
-- ✅ Datas de inclusão, edição e exclusão geradas automaticamente
-- ✅ Validação de entrada com tratamento de erro `400`
-- ✅ Logs registrados em tempo real para cada operação
+- **GET /filmes** – Listar todos os filmes
+- **GET /filmes/{id}** – Obter um filme por ID
+- **POST /filmes** – Criar um novo filme manualmente
+- **PUT /filmes/{id}** – Atualizar informações de um filme
+- **DELETE /filmes/{id}** – Remover um filme
+- **POST /etl/tmdb** - Executar ETL da API TMDb
 
 ---
 
-## 🧪 Testes Automatizados
+## 🔁 Extração e Tratamento de Dados (ETL)
 
-- Desenvolvidos com `pytest` e `TestClient` do FastAPI
-- Testes de:
-  - Criação (`POST`)
-  - Leitura (`GET`)
-  - Atualização (`PUT`)
-  - Exclusão (`DELETE`)
-  - Validações de erros e status HTTP
-- Rodam com banco de dados `:memory:` (isolado por teste)
-- Simulam inserção e retorno com schemas reais
+- Extração de dados em tempo real da API TMDb
+- Filtro por gêneros e popularidade
+- Armazenamento estruturado em SQLite usando SQLAlchemy ORM
 
 ---
 
-## 📝 Registro de Logs
+## 🎥 Banco de Dados (SQLite via SQLAlchemy)
 
-- Implementação completa de `logging` no backend
-- Logs gerados para cada endpoint (`INFO`, `ERROR`)
-- Mensagens padronizadas com timestamp e rota acessada
-- Exemplo de log gerado:
+O banco de dados `database.db` contém:
 
-▶️ Como rodar localmente
+- **Filme** – Título, data de lançamento, nota, imagem, descrição, popularidade, e gênero(s)
 
-# Instalar dependências
-pip install -r requirements.txt
+---
 
-# Executar a API localmente
-uvicorn code_war.app:app --reload
+## 📊 Dashboard Interativo com Streamlit
 
-# Rodar testes
-pytest
+O painel exibe:
 
-👨‍💻 Autor
+- 🎞️ Lista de filmes com imagem e descrição
+- 📊 Filtro por gênero
+- 📈 Gráficos de popularidade e avaliações
+- 🔍 Pesquisa dinâmica por título
 
-Desenvolvido por Pedro Eduardo Braga
+---
+
+## ⚙️ Tecnologias Utilizadas
+
+- **FastAPI** – Para construção da API
+- **SQLAlchemy** – ORM para manipulação do banco
+- **Pydantic** – Validação e estruturação de dados
+- **Poetry** – Gerenciador de dependências
+- **TMDb API** – Fonte dos dados
+- **Streamlit** – Para construção do dashboard
+
+---
+
+## 🔐 Variáveis de Ambiente (.env)
+
+```env
+DATABASE_URL=sqlite:///./database.db
+TMDB_API_KEY=sua_api_key_aqui
+```
+---
+
+## 🚀 Como Rodar Localmente
+
+- Instale dependências
+```bash
+poetry install
+```
+
+- Execute a API
+```bash
+poetry run uvicorn app:app --reload
+```
+
+- Execute o Dashboard
+```bash
+poetry run streamlit run dashboard.py
+```
+---
+
+## 🐋 Executando via Docker
+
+```bash
+docker build -t meu-dashboard-tmdb.
+docker run -p 8501:8501 meu-dashboard-tmdb.
