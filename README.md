@@ -78,12 +78,12 @@ poetry install
 
 - Execute a API
 ```bash
-poetry run uvicorn app:app --reload
+poetry run uvicorn src.code_war.app:app --reload
 ```
 
 - Execute o Dashboard
 ```bash
-poetry run streamlit run dashboard.py
+poetry run streamlit run src/code_war/dashboard.py
 ```
 ---
 
