@@ -17,6 +17,7 @@ alembic = "^1.16.2"
 streamlit = "^1.47.0"
 plotly = "^6.2.0"
 pandas = "^2.2.2"
+dicttoxml = "^1.7.16"
 
 [tool.poetry]
 packages = [{include = "code_war", from = "src"}]
